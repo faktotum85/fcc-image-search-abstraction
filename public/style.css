@@ -1,0 +1,10 @@
+body {
+  max-width: 940px;
+  font-family: sans-serif;
+  padding: 0 10px 0 10px;
+  margin: auto;
+}
+
+.code {
+  font-family: monospace, sans-serif;
+}

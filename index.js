@@ -8,6 +8,8 @@ const app = express();
 const port = process.env.PORT || 8080;
 const dbUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/imagesearch';
 
+app.use(express.static(__dirname + '/public'));
+
 app.get('/api/latest/imagesearch', (req, res) => {
   db.collection('history')
   .find({
