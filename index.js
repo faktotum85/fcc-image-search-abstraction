@@ -9,7 +9,15 @@ app.get('/api/imagesearch/:searchTerm', (req, res) => {
   const searchTerm = req.params.searchTerm;
   request.get(`https://www.googleapis.com/customsearch/v1?cx=000492143642458176317:8sltgvz-ir0&q=${searchTerm}&key=AIzaSyCoycQQfVqnwrpPE7KMwGxoDQloYuToRx8&searchType=image`, (err, response, body) => {
     if (!err && response.statusCode === 200) {
-      res.end(body);
+      const items = JSON.parse(body).items;
+      res.json(items.map(item => {
+        return {
+          url: item.link,
+          snippet: item.snippet,
+          thumbnail: item.image.thumbnailLink,
+          context: item.image.contextLink
+        }
+      }));
     } else {
       res.end();
     }
