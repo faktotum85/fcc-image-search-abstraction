@@ -1,9 +1,12 @@
 const express = require('express');
 const request = require('request');
 const https = require('https');
+const mongo = require('mongodb').MongoClient;
 
+let db;
 const app = express();
 const port = process.env.PORT || 8080;
+const dbUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/imagesearch';
 
 app.get('/api/imagesearch/:searchTerm', (req, res) => {
   const searchTerm = req.params.searchTerm;
@@ -12,6 +15,7 @@ app.get('/api/imagesearch/:searchTerm', (req, res) => {
   if (offset) {
     url += '&start=' + (+offset + 1);
   }
+  logSearch(searchTerm);
   request.get(url, (err, response, body) => {
     if (!err && response.statusCode === 200) {
       const items = JSON.parse(body).items;
@@ -29,6 +33,20 @@ app.get('/api/imagesearch/:searchTerm', (req, res) => {
   });
 });
 
-app.listen(port, () => {
-  console.log(`App listening on port ${port}`);
+mongo.connect(dbUri, (err, connection) => {
+  if (err) throw err;
+  db = connection;
+
+  app.listen(port, () => {
+    console.log(`App listening on port ${port}`);
+  });
 });
+
+function logSearch(searchTerm) {
+  db.collection('history').insert({
+    term: searchTerm,
+    when: new Date()
+  }, (err, data) => {
+    if (err) console.error(err);
+  });
+}
