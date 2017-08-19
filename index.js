@@ -8,6 +8,26 @@ const app = express();
 const port = process.env.PORT || 8080;
 const dbUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/imagesearch';
 
+app.get('/api/latest/imagesearch', (req, res) => {
+  db.collection('history')
+  .find({
+
+  }, {
+      _id: 0
+  })
+  .sort({
+    when: -1
+  })
+  .limit(10)
+  .toArray((err, docs) => {
+    if (err) {
+      console.error(err);
+      res.end(err);
+    }
+    res.json(docs);
+  });
+});
+
 app.get('/api/imagesearch/:searchTerm', (req, res) => {
   const searchTerm = req.params.searchTerm;
   const offset = req.query.offset;
